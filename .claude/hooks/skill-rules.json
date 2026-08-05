@@ -1,0 +1,70 @@
+{
+  "$schema": "./skill-rules.schema.json",
+  "version": "2.0",
+  "config": {
+    "minConfidenceScore": 3,
+    "showMatchReasons": true,
+    "maxSkillsToShow": 5
+  },
+  "scoring": {
+    "keyword": 2,
+    "keywordPattern": 3,
+    "pathPattern": 4,
+    "directoryMatch": 5,
+    "intentPattern": 4,
+    "contentPattern": 3,
+    "contextPattern": 2
+  },
+  "directoryMappings": {
+    "tests": "systematic-debugging"
+  },
+  "skills": {
+    "reproducibility": {
+      "description": "Seeds, determinism, environment pinning, provenance",
+      "priority": 8,
+      "triggers": {
+        "keywords": ["seed", "reproducible", "reproducibility", "deterministic", "pin", "freeze", "environment", "provenance"],
+        "keywordPatterns": ["\\bseed\\b", "\\breproducib", "\\bdeterministic\\b"],
+        "pathPatterns": ["**/requirements*.txt", "**/pyproject.toml", "**/setup.py", "**/setup.cfg"],
+        "intentPatterns": [
+          "(?:set|fix|ensure).*(?:seed|reproducib|deterministic)",
+          "(?:pin|freeze|lock).*(?:depend|version|environment)",
+          "(?:reproduce|replicate).*(?:result|experiment|run)"
+        ],
+        "contentPatterns": ["random\\.seed", "torch\\.manual_seed", "np\\.random\\.seed", "set_all_seeds", "PYTHONHASHSEED"]
+      },
+      "relatedSkills": ["systematic-debugging"]
+    },
+    "systematic-debugging": {
+      "description": "Engineering code debugging — NaN, OOM, shapes, training instability",
+      "priority": 9,
+      "triggers": {
+        "keywords": ["bug", "debug", "fix", "error", "nan", "inf", "oom", "crash", "failing", "broken", "issue"],
+        "keywordPatterns": ["\\bbug\\b", "\\bfix\\b", "\\berror\\b", "\\bnan\\b", "\\boom\\b", "doesn't work", "not working"],
+        "intentPatterns": [
+          "(?:fix|debug|resolve|investigate).*(?:bug|error|issue|problem|nan|oom|crash)",
+          "(?:why).*(?:not working|broken|failing|crash|nan|diverge)",
+          "(?:training).*(?:unstable|diverge|explod|nan)"
+        ],
+        "contentPatterns": ["RuntimeError", "CUDA.*out of memory", "NaN", "traceback", "assert.*Error"]
+      },
+      "excludePatterns": ["fix typo", "fix formatting", "fix lint", "fix import"],
+      "relatedSkills": ["reproducibility"]
+    },
+    "excalidraw-skill": {
+      "description": "Sketch, edit, and refine diagrams on a live Excalidraw canvas",
+      "priority": 6,
+      "triggers": {
+        "keywords": ["diagram", "sketch", "excalidraw", "canvas", "draw", "flowchart", "architecture diagram", "mermaid", "whiteboard", "visualize"],
+        "keywordPatterns": ["\\bdiagram\\b", "\\bsketch\\b", "\\bexcalidraw\\b", "\\bflowchart\\b", "\\bmermaid\\b", "draw.*diagram", "architecture.*diagram"],
+        "pathPatterns": ["**/*.excalidraw", "**/*.mmd"],
+        "intentPatterns": [
+          "(?:draw|sketch|create|make|lay out).*(?:diagram|flowchart|chart|architecture)",
+          "(?:visualize|illustrate).*(?:architecture|pipeline|flow|model)",
+          "(?:convert|turn).*mermaid.*(?:diagram|canvas)"
+        ],
+        "contentPatterns": ["excalidraw", "```mermaid", "graph TD", "flowchart"]
+      }
+    }
+  }
+}
